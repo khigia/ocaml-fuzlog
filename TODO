@@ -1,0 +1,2 @@
+ - the record of operators in Controller module should be an module from outside (Controller could be evaluated given a FuzIO and a Configuration; so we can easily try different configurations)
+ - write a tiny parser to be able to write rules more conveniently
