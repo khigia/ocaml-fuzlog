@@ -1,3 +1,4 @@
 <tools/make_suite.*>: pkg_pcre
 <test/*.*>: pkg_oUnit
+<fuzlog/*.cmx>: for-pack(Fuzlog)
 
