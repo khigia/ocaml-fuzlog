@@ -1,19 +1,21 @@
+OCAMLBUILD=ocamlbuild -classic-display
+
 .PHONY: ex
 ex:
-	ocamlbuild \
+	$(OCAMLBUILD) \
 		example/ex_simple_inference.byte
 
 .PHONY: build
 build:
-	ocamlbuild fuzlog.cma
+	$(OCAMLBUILD) fuzlog.cma
 
 .PHONY: clean
 clean:
-	ocamlbuild -clean
+	$(OCAMLBUILD) -clean
 
 .PHONY: test
 test: build
-	ocamlbuild tools/make_suite.byte
+	$(OCAMLBUILD) tools/make_suite.byte
 	cd test && ../make_suite.byte *.ml > tests.ml && cd -
-	ocamlbuild -I fuzlog -lib fuzlog test/tests.byte
+	$(OCAMLBUILD) -I fuzlog -lib fuzlog test/tests.byte
 	./tests.byte

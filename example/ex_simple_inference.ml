@@ -37,6 +37,13 @@ let create_model () =
                 (Conclusion.create_output "output1" fast)
             );
         ]
+        (*
+        Parser.parse_string "
+            IF in1 IS big AND in2 IS BIG THEN ou1 IS fast
+            IF in2 IS BIG THEN ou2 IS fast
+            IF in2 IS BIG THEN ou1 IS fast
+        "
+        *)
 
 let doit () = 
     (* model is the fuzzy controller *)
