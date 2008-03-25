@@ -1,3 +1,5 @@
+open Fuzlog
+
 let _cmp_float a b =
     let d = a -. b in
     abs_float d < 0.01
@@ -23,7 +25,8 @@ let _mu_check s x expected =
         expected
         y
 
-let test_create () =
+
+let _ = Tests.register "create" (fun () ->
     let s = FuzzySet.create [
         (2.0, 0.8);
         (3.0, 0.0);
@@ -43,21 +46,24 @@ let test_create () =
     OUnit.assert_raises
         (FuzzySet.InvalidPossibilityValue (1.1))
         (fun () -> FuzzySet.create [ (2.0, 1.1); ])
+)
 
-let test_create_triangle () =
+let _ = Tests.register "Create triangle" (fun () ->
     let s = FuzzySet.create_triangle 1.0 3.0 in
     OUnit.assert_equal
         ~cmp:_cmp_points
         ~msg:"create skew triangle"
         [(1.0, 0.0); (2.0, 1.0); (3.0, 0.0);]
         (FuzzySet.points s)
+)
     
-let test_to_s () =
+let _ = Tests.register "to_s" (fun () ->
     let s = FuzzySet.create_triangle 12.0 42.0 in
     let _ = FuzzySet.to_s s in
     OUnit.assert_bool "to_s failure" true
+)
 
-let test_mu () =
+let _ = Tests.register "mu" (fun () ->
     let s = FuzzySet.create_triangle 1.0 3.0 in
     let _ = _mu_check s 0.5 0.0 in
     let _ = _mu_check s 1.0 0.0 in
@@ -69,8 +75,9 @@ let test_mu () =
     let _ = _mu_check s 3.0 0.0 in
     let _ = _mu_check s 3.5 0.0 in
     ()
+)
 
-let test_product () =
+let _ = Tests.register "product" (fun () ->
     let s0 = FuzzySet.create [
         (-1.0, 0.2);
         (2.0, 1.0);
@@ -83,8 +90,9 @@ let test_product () =
         ~msg:"product with saturation"
         [(-1.0, 0.4); (2.0, 1.0); (5.5, 1.0); (6.5, 0.6);]
         (FuzzySet.points s1)
+)
 
-let test_combine_max () =
+let _ = Tests.register "combine by maximum" (fun () ->
     let s1 = FuzzySet.create_triangle 0.0 4.0 in
     let s2 = FuzzySet.create_triangle 2.0 6.0 in
     let max = FuzzySet.combine_max s1 s2 in
@@ -93,8 +101,9 @@ let test_combine_max () =
         ~msg:"combine maximum"
         [(0.0, 0.0); (2.0, 1.0); (3.0, 0.5); (4.0, 1.0); (6.0, 0.0);]
         (FuzzySet.points max)
+)
 
-let test_x_cdg () =
+let _ = Tests.register "x of barycenter" (fun () ->
     let s1 = FuzzySet.create_triangle 0.0 4.0 in
     let s2 = FuzzySet.create_triangle 2.0 6.0 in
     let comb = FuzzySet.combine_max s1 s2 in
@@ -110,4 +119,6 @@ let test_x_cdg () =
     tester s1 2.0;
     tester s2 4.0;
     tester comb 3.0
+)
 
+let _ = Tests.run "FuzzySet test suite"

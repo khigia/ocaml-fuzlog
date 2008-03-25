@@ -1,9 +1,15 @@
+TEST_SOURCES=${wildcard test/*Test.ml}
+TEST_BYTE   =${TEST_SOURCES:.ml=.byte}
+
+EX_SOURCES=${wildcard example/*.ml}
+EX_BYTE   =${EX_SOURCES:.ml=.byte}
+
 OCAMLBUILD=ocamlbuild -classic-display
+
 
 .PHONY: ex
 ex:
-	$(OCAMLBUILD) \
-		example/ex_simple_inference.byte
+	$(OCAMLBUILD) ${EX_BYTE}
 
 .PHONY: build
 build:
@@ -14,8 +20,6 @@ clean:
 	$(OCAMLBUILD) -clean
 
 .PHONY: test
-test: build
-	$(OCAMLBUILD) tools/make_suite.byte
-	cd test && ../make_suite.byte *.ml > tests.ml && cd -
-	$(OCAMLBUILD) -I fuzlog -lib fuzlog test/tests.byte
-	./tests.byte
+test:
+	$(OCAMLBUILD) ${TEST_BYTE}
+	for i in ${TEST_BYTE} ; do ./`basename $$i` ; done
