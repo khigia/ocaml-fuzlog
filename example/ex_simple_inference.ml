@@ -1,18 +1,31 @@
 open Fuzlog
 open Inference
 
-let create_model () =
-    (* define few liguistic variables *)
-    let big = VarLing.create
+let create_vocabulary () =
+    (* define few liguistic variables and register them *)
+    let voc = Vocabulary.create () in
+    let _ = Vocabulary.set
+        voc
         "BIG"
         (FuzzySet.create_triangle 5.0 15.0)
     in
-    let fast = VarLing.create
+    let _ = Vocabulary.set
+        voc
         "FAST"
         (FuzzySet.create_triangle 90.0 110.0)
     in
+    voc
+
+let create_model voc =
     (* a model is a set of functions and a set of rules *)
+    (*TODO set of function should be in another module *)
+
+    (* this is the "hand-written" code *)
+    let big = Vocabulary.get voc "BIG" in
+    let fast = Vocabulary.get voc "FAST" in
     Controller.create
+        (* TODO using default values and setter give a more
+        friendly API *)
         Norm.minimum (* how to compute "a AND b" in rule premisse *)
         Implication.larsen (* definition of implication operator *)
         IsAlso.maximum (* define "output IS V1 AND output IS V2" in conclusion *)
@@ -37,8 +50,10 @@ let create_model () =
                 (Conclusion.create_output "output1" fast)
             );
         ]
-        (*
-        Parser.parse_string "
+
+        (* TODO what we should write using the parser:
+        let ctrl0 = Controller.make () in
+        let ctrl1 = Controller.parse_rules ctrl0 voc "
             IF in1 IS big AND in2 IS BIG THEN ou1 IS fast
             IF in2 IS BIG THEN ou2 IS fast
             IF in2 IS BIG THEN ou1 IS fast
@@ -46,20 +61,21 @@ let create_model () =
         *)
 
 let doit () = 
-    (* model is the fuzzy controller *)
-    let ctrl1 = create_model () in
+    (* define the linguistic variables *)
+    let voc = create_vocabulary () in
+    (* define the model i.e. the fuzzy controller *)
+    let ctrl1 = create_model voc in
     (* all input/output to model are set/get through FuzIO:
     this is to enable to use the same model for multiple control state
     *)
     let fuzIO = FuzIO.create () in
     (* set some inputs *)
-    FuzIO.clear fuzIO;
     FuzIO.set_input fuzIO "input1" 6.0;
     FuzIO.set_input fuzIO "input2" 7.0;
     (* eval the fuzzy inference *)
     ignore(Controller.eval ctrl1 fuzIO);
     FuzIO.debug fuzIO;
-    (* get some output after defuzzification *)
+    (* print some output after defuzzification *)
     List.iter
         (fun (name, value) ->
             Printf.printf "Defuzz: %s=%f\n" name value

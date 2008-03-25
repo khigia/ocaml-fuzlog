@@ -60,7 +60,7 @@ module FuzIO = struct
 end (* module FuzIO *)
 
 
-module VarLing = struct
+module Var = struct
     
     type t = {
         name: string;
@@ -76,7 +76,27 @@ module VarLing = struct
 
     let value var = var.set
 
-end (* module VarLing *)
+end (* module Var *)
+
+
+module Vocabulary = struct
+    
+    type t = {
+        vars: (string, Var.t) Hashtbl.t;
+    }
+
+    let create () = {
+        vars = Hashtbl.create 10;
+    }
+    
+    let get voc symb =
+        Hashtbl.find voc.vars symb
+
+    let set voc symb value =
+        let var = Var.create symb value in
+        Hashtbl.replace voc.vars symb var
+
+end (* module Vocabulary *)
 
 
 module Norm = struct
@@ -129,7 +149,7 @@ module Premisse = struct
 
         type t = {
             name: string;
-            var:  VarLing.t;
+            var:  Var.t;
         }
 
         let create name var = {
@@ -138,12 +158,12 @@ module Premisse = struct
         }
 
         let fuzzyfy input value =
-            FuzzySet.mu (VarLing.value input.var) value
+            FuzzySet.mu (Var.value input.var) value
             
         let name input = input.name
 
         let to_s input = 
-            Printf.sprintf "%s IS %s" input.name (VarLing.name input.var)
+            Printf.sprintf "%s IS %s" input.name (Var.name input.var)
 
     end (* module Input *)
 
@@ -179,7 +199,7 @@ module Conclusion = struct
 
         type t = {
             name: string;
-            var:  VarLing.t;
+            var:  Var.t;
         }
 
         let create name var = {
@@ -188,13 +208,13 @@ module Conclusion = struct
         }
 
         let eval output activation implication isAlso fuzvalue =
-            let res = implication activation (VarLing.value output.var) in
+            let res = implication activation (Var.value output.var) in
             match fuzvalue with
             | Some value -> Some (isAlso value res)
             | None -> Some res
             
         let to_s output = 
-            Printf.sprintf "%s IS %s" output.name (VarLing.name output.var)
+            Printf.sprintf "%s IS %s" output.name (Var.name output.var)
 
     end (* module Output *)
 
@@ -229,6 +249,7 @@ module Controller = struct
     *)
 
     type operators = {
+        (* TODO this should be external so we can test the set of rules with a different config *)
         opAnd:    Norm.t;
         opImply:  Implication.t;
         opIsAlso: IsAlso.t;
@@ -236,6 +257,7 @@ module Controller = struct
     }
 
     module Rule = struct
+        (* TODO why keep it internal to controller??? *)
         
         type t = {
             name:  string;
