@@ -108,11 +108,11 @@ let _ = Tests.register "x of barycenter" (fun () ->
     let s2 = FuzzySet.create_triangle 2.0 6.0 in
     let comb = FuzzySet.combine_max s1 s2 in
     let tester = fun set expected ->
-        let x = FuzzySet.x_cdg set in
+        let x = FuzzySet.x_cog set in
         OUnit.assert_equal
             ~cmp:_cmp_float
-            ~msg:"x_cdg"
-            ~printer:(fun v -> Printf.sprintf "x_cdg=%f" v)
+            ~msg:"x_cog"
+            ~printer:(fun v -> Printf.sprintf "x_cog=%f" v)
             expected
             x
     in

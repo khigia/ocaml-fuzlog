@@ -135,7 +135,7 @@ module Defuzzyfication = struct
     type t = FuzzySet.t -> float
 
     let barycenter set =
-        FuzzySet.x_cdg set
+        FuzzySet.x_cog set
 
 end (* module Defuzzyfication *)
 

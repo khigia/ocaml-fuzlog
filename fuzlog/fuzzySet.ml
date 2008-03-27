@@ -129,7 +129,7 @@ let combine_max set1 set2 =
     let res = _max [] Any points in
     res
 
-let x_cdg set =
+let x_cog set =
     let pt0, rest = match set with
         | [] -> raise Divergent
         | p :: [] -> raise Divergent
@@ -141,21 +141,19 @@ let x_cdg set =
             (fun (w0, xw0, (x0, y0)) (x, y) ->
                 (* rectangle part *)
                 let deltaX = x -. x0 in
-                let rect = deltaX *. (min y y0) in
-                let w1 = w0 +. rect in
-                let xw1 = xw0 +. (x0 +. deltaX /. 2.0) *. rect in
+                let w1 = deltaX *. (min y y0) in
+                let xw1 = (x0 +. deltaX /. 2.0) *. w1 in
                 (* triangle part *)
                 let deltaY = y -. y0 in
-                let tr, xtr =
+                let w2, xtr =
                     if deltaY > 0.0
                     then
                         (0.5 *. deltaX *. deltaY, x0 +. deltaX *. 2.0 /. 3.0)
                     else
                         (-0.5 *. deltaX *. deltaY, x0 +. deltaX /. 3.0)
                 in
-                let w2 = w1 +. tr in
-                let xw2 = xw1 +. xtr *. tr in
-                (w2, xw2, (x, y))
+                let xw2 = xtr *. w2 in
+                (w0 +. w1 +. w2, xw0 +. xw1 +. xw2, (x, y))
             )
             (0.0, 0.0, pt0) (* running integ, x*integ, and first point of element *)
             rest
