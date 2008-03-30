@@ -29,7 +29,8 @@ let rec to_s_tree_is t indent = match t with
 
 let rec to_s_tree t indent = match t with
     | Imply(s1, s2) ->
-        Printf.sprintf "%sIF-THEN\n%s\n%s"
+        Printf.sprintf "%sIF\n%s\n%sTHEN\n%s"
             (String.make indent ' ')
             (to_s_tree_is s1 (indent + 1))
+            (String.make indent ' ')
             (to_s_tree_is s2 (indent + 1))

@@ -2,7 +2,7 @@
 open Parser
 }
 
-let alphanum = ['a'-'z''A'-'Z''0'-'9']
+let alphanum = ['_''a'-'z''A'-'Z''0'-'9']
 
 rule tokens = parse
   | [' ' '\n' '\t'] { tokens lexbuf }

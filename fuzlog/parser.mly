@@ -15,9 +15,12 @@ open Ast
 %%
 
 rules:
+    rules_ { List.rev $1 }
+
+rules_:
     rule
         { [ $1 ] }
-    | rules rule
+    | rules_ rule
         { $2 :: $1 }
 
 rule:
