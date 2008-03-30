@@ -239,73 +239,59 @@ module Conclusion = struct
 end (* module Conclusion *)
 
 
-module Controller = struct
+type operators = {
+    opAnd:    Norm.t;
+    opImply:  Implication.t;
+    opIsAlso: IsAlso.t;
+    opDefuzz: Defuzzyfication.t;
+}
 
-    (* TODO linguistic variable could be embeded,
-    thus they can be referenced by name only (rule could be shared
-    amongst controllers),
-    and they can be printed for debug while printing the controller
-    status (rules, vars)
-    *)
 
-    type operators = {
-        (* TODO this should be external so we can test the set of rules with a different config *)
-        opAnd:    Norm.t;
-        opImply:  Implication.t;
-        opIsAlso: IsAlso.t;
-        opDefuzz: Defuzzyfication.t;
+module Rule = struct
+    
+    type t = {
+        cond:  Premisse.t;
+        concl: Conclusion.t;
     }
 
-    module Rule = struct
-        (* TODO why keep it internal to controller??? *)
-        
-        type t = {
-            name:  string;
-            cond:  Premisse.t;
-            concl: Conclusion.t;
-        }
+    let create cond concl = {
+        cond = cond;
+        concl = concl;
+    }
 
-        let create name cond concl = {
-            name = name;
-            cond = cond;
-            concl = concl;
-        }
+    let to_s rule =
+        Printf.sprintf
+            "IF %s THEN %s END"
+            (Premisse.to_s rule.cond)
+            (Conclusion.to_s rule.concl)
 
-        let to_s rule =
-            Printf.sprintf
-                "IF %s THEN %s END"
-                (Premisse.to_s rule.cond)
-                (Conclusion.to_s rule.concl)
+    let _eval_activation rule ops ctx =
+        Premisse.eval rule.cond ops.opAnd None ctx
 
-        let _eval_activation rule ops ctx =
-            Premisse.eval rule.cond ops.opAnd None ctx
-
-        let _eval_conclusion rule act ops ctx =
-            Conclusion.eval
-                rule.concl
-                act
-                ops.opImply
-                ops.opIsAlso
-                ctx
-
-        let eval rule ops ctx =
-            let act = _eval_activation rule ops ctx in
-            let _ = _eval_conclusion rule act ops ctx in
-            Printf.printf "%s [%f]: %s\n" rule.name act (to_s rule);
+    let _eval_conclusion rule act ops ctx =
+        Conclusion.eval
+            rule.concl
             act
+            ops.opImply
+            ops.opIsAlso
+            ctx
 
-    end (* module Rule *)
+    let eval rule ops ctx =
+        let act = _eval_activation rule ops ctx in
+        let _ = _eval_conclusion rule act ops ctx in
+        act
 
+end (* module Rule *)
+
+
+module Controller = struct
 
     type t = {
         operators: operators;
         rules: Rule.t list;
     }
 
-    let add_rule ctrl premisse conclusion =
-        let name = Printf.sprintf "Rule %d" (List.length ctrl.rules) in
-        let rule = Rule.create name premisse conclusion in
-        (*ctrl.rules <- (ctrl.rules @ [ rule; ])*)
+    let add_rule ctrl rule =
         {ctrl with rules = ctrl.rules @ [ rule; ]}
 
     let create norm implication opIsAlso defuzz rules =
@@ -320,13 +306,22 @@ module Controller = struct
             rules = [];
         } in
         List.fold_left
-            (fun ctrl (prem, concl) -> add_rule ctrl prem concl)
+            (fun ctrl rule -> add_rule ctrl rule)
             ctrl0
             rules
 
     let eval ctrl ctx =
-        List.map
-            (fun rule -> Rule.eval rule ctrl.operators ctx)
+        List.fold_left
+            (fun idx rule ->
+                let act = Rule.eval rule ctrl.operators ctx in
+                Printf.printf "Rule %d [%f]: %s\n"
+                    idx
+                    act
+                    (Rule.to_s rule)
+                ;
+                idx + 1
+            )
+            0
             ctrl.rules
         
     let defuzz ctrl ctx =

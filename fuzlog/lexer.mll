@@ -2,11 +2,13 @@
 open Parser
 }
 
+let alphanum = ['a'-'z''A'-'Z''0'-'9']
+
 rule tokens = parse
   | [' ' '\n' '\t'] { tokens lexbuf }
   | "IF"|"if"       { IF }
   | "THEN"|"then"   { THEN }
   | "IS"|"is"       { IS }
   | "AND"|"and"     { AND }
-  | ['a'-'z']+ as s { SYMB(s) }
+  | alphanum+ as s  { SYMB(s) }
   | eof             { EOF }

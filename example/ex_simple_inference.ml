@@ -32,32 +32,32 @@ let create_model voc =
         Defuzzyfication.barycenter (* from fuzzy value to crisp one *)
         [
             (* Rule1: IF in1 IS big AND in2 IS BIG THEN ou1 IS fast *)
-            (
+            (Rule.create 
                 (Premisse.connect_and
                     (Premisse.create_input "input1" big)
                     (Premisse.create_input "input2" big)
-                ),
+                )
                 (Conclusion.create_output "output1" fast)
             );
             (* Rule2: IF in2 IS BIG THEN ou2 IS fast *)
-            (
-                (Premisse.create_input "input2" big),
+            (Rule.create 
+                (Premisse.create_input "input2" big)
                 (Conclusion.create_output "output2" fast)
             );
             (* Rule2: IF in2 IS BIG THEN ou1 IS fast *)
-            (
-                (Premisse.create_input "input2" big),
+            (Rule.create 
+                (Premisse.create_input "input2" big)
                 (Conclusion.create_output "output1" fast)
             );
         ]
 
         (* TODO what we should write using the parser:
-        let ctrl0 = Controller.make () in
-        let ctrl1 = Controller.parse_rules ctrl0 voc "
+        let rules = Parser.parse_rules voc "
             IF in1 IS big AND in2 IS BIG THEN ou1 IS fast
             IF in2 IS BIG THEN ou2 IS fast
             IF in2 IS BIG THEN ou1 IS fast
-        "
+        " in
+        let ctrl = Controller.make rules
         *)
 
 let doit () = 
