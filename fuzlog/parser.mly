@@ -1,5 +1,6 @@
 %{
 open Ast
+
 %}
 
 %token IF THEN
@@ -36,6 +37,11 @@ is_branch:
 ;
 
 is:
-    SYMB IS SYMB
-        { Is(Symb($1), Symb($3)) }
+    symb IS symb
+        { Is($1, $3) }
+;
+
+symb:
+    SYMB
+        { Symb $1 }
 ;

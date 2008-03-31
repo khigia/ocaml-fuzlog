@@ -34,3 +34,34 @@ let rec to_s_tree t indent = match t with
             (to_s_tree_is s1 (indent + 1))
             (String.make indent ' ')
             (to_s_tree_is s2 (indent + 1))
+
+
+open Inference
+
+let to_symb t = match t with
+    | Symb s -> s
+
+let to_var voc t = match t with
+    | Symb s ->
+        Printf.printf "Looking for %s\n" s;
+        Vocabulary.get voc s
+
+let rec to_premisse voc t = match t with
+    | Is(s1, s2) ->
+        Premisse.create_input (to_symb s1) (to_var voc s2)
+    | And(s1, s2) ->
+        Premisse.connect_and
+            (to_premisse voc s1)
+            (to_premisse voc s2)
+
+let rec to_conclusion voc t = match t with
+    | Is(s1, s2) ->
+        Conclusion.create_output (to_symb s1) (to_var voc s2)
+    | And(s1, s2) ->
+        failwith "not implemented: rules can have only one conclusion :("
+
+let rec to_rule voc t = match t with
+    | Imply(s1, s2) ->
+        Rule.create
+            (to_premisse voc s1)
+            (to_conclusion voc s2)
