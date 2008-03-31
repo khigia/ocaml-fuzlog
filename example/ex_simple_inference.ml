@@ -53,23 +53,13 @@ let create_model_1 voc =
 
 let create_model_2 voc =
     (*TODO need some wrapper/helper *)
-    (* TODO error cases
-    var not found
-    input not found
-    output not found
-    ...
-    *)
     let lexbuf = Lexing.from_string "
         IF input1 IS BIG AND input2 IS BIG THEN ou1 IS FAST
         IF input2 IS BIG THEN ou2 IS FAST
         IF input2 IS BIG THEN ou1 IS FAST
     " in
     let ruleTrees = Parser.rules Lexer.tokens lexbuf in
-    let rules =
-        List.map
-            (Ast.to_rule voc)
-            ruleTrees
-    in
+    let rules = List.map (Ast.to_rule voc) ruleTrees in
     Controller.create
         (* TODO using default values and setter give a more
         friendly API *)
@@ -89,6 +79,7 @@ let eval_model ctrl =
     FuzIO.set_input fuzIO "input1" 6.0;
     FuzIO.set_input fuzIO "input2" 7.0;
     (* eval the fuzzy inference *)
+    (* TODO error case: input not found *)
     ignore(Controller.eval ctrl fuzIO);
     FuzIO.debug fuzIO;
     (* print some output after defuzzification *)

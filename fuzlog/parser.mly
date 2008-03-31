@@ -15,6 +15,8 @@ open Ast
 
 %%
 
+/* TODO parse a vocabulary section */
+
 rules:
     rules_ { List.rev $1 }
 

@@ -42,8 +42,8 @@ let to_symb t = match t with
     | Symb s -> s
 
 let to_var voc t = match t with
+    (* TODO error case: var not found *)
     | Symb s ->
-        Printf.printf "Looking for %s\n" s;
         Vocabulary.get voc s
 
 let rec to_premisse voc t = match t with
