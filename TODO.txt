@@ -1,0 +1,5 @@
+ - handle error in parsing
+ - handle error in Builder
+ - handle error in rule evaluation
+ - parse some DSL for linguistic variable (Vocabulary) definition
+ - more interesting example (what about fuzzy BOIDS?)
