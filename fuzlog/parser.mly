@@ -47,3 +47,5 @@ symb:
     SYMB
         { Symb $1 }
 ;
+%%
+

@@ -284,6 +284,10 @@ module Rule = struct
 end (* module Rule *)
 
 
+(* a model or controller is:
+    - a set of rules defining the logic
+    - a set of functions defining the fuzzy evaluation
+*)
 module Controller = struct
 
     type t = {
@@ -294,7 +298,13 @@ module Controller = struct
     let add_rule ctrl rule =
         {ctrl with rules = ctrl.rules @ [ rule; ]}
 
-    let create norm implication opIsAlso defuzz rules =
+    let create
+        ?(norm=Norm.minimum) (* "a AND b" in rule premisse *)
+        ?(implication=Implication.larsen)
+        ?(opIsAlso=IsAlso.maximum) (* "output IS V1 AND output IS V2" in rule conclusion *)
+        ?(defuzz=Defuzzyfication.barycenter) (* from fuzzy value to crisp one *)
+        rules
+    =
         let ops = {
             opAnd = norm;
             opImply = implication;
@@ -334,6 +344,5 @@ module Controller = struct
             []
 
 end (* module Controller *)
-
 
 
