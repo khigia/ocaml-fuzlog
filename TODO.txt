@@ -1,3 +1,4 @@
+ - writing mli files (documented!)
  - handle error in parsing
  - handle error in Builder
  - handle error in rule evaluation
