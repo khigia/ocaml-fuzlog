@@ -81,6 +81,15 @@ end (* module Var *)
 
 module Vocabulary = struct
     
+    let creators = Hashtbl.create 5
+
+    let register_creator (name:string) (creator:(float list -> FuzzySet.t)) =
+        Hashtbl.replace creators name creator
+
+    let find_creator name =
+        Hashtbl.find creators name
+
+
     type t = {
         vars: (string, Var.t) Hashtbl.t;
     }
@@ -95,6 +104,9 @@ module Vocabulary = struct
     let set voc symb value =
         let var = Var.create symb value in
         Hashtbl.replace voc.vars symb var
+
+    let length voc =
+        Hashtbl.length voc.vars
 
 end (* module Vocabulary *)
 

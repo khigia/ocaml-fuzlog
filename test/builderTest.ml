@@ -21,6 +21,14 @@ let _ = Tests.register "Build AST for vocabulary" (fun () ->
     OUnit.assert_bool "Not expected AST for vocabulary" result
 )
 
+let _ = Tests.register "Build voc" (fun () ->
+    let voc = Builder.voc_from_string "
+        DEF BIG  TRIANGLE 5.0 15.0
+        DEF SMURGL [ (1 0.1) (2 0.4) ]
+    " in
+    OUnit.assert_equal 2 (Vocabulary.length voc)
+)
+
 let _ = Tests.register "Build AST for rules" (fun () ->
     let nodes = Builder.rule_ast_from_string "
         IF in10 IS big THEN ou10 IS fast

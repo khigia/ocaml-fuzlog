@@ -37,7 +37,29 @@ let rules_from_string voc s =
     List.map (to_rule voc) (rule_ast_from_string s)
 
 
+let _ = Vocabulary.register_creator
+    "TRIANGLE"
+    (fun l -> match l with
+        | i1::i2::[] -> FuzzySet.create_triangle i1 i2
+        | _ -> failwith "creator TRIANGLE expect 2 float arguments"
+    )
+
+
+let to_var voc t = match t with
+    | DefByFun (Symb s, Symb def, nums) ->
+        let c = Vocabulary.find_creator def in
+        Vocabulary.set voc s (c nums)
+    | DefByPoints (Symb s, points) ->
+        Vocabulary.set voc s (FuzzySet.create points)
+
 let voc_ast_from_string s =
     let lexbuf = Lexing.from_string s in
     Parser.vocabulary Lexer.voc_tokens lexbuf
+
+let voc_from_string s =
+    let voc = Vocabulary.create () in
+    List.iter
+        (to_var voc)
+        (voc_ast_from_string s)
+    ; voc
 
