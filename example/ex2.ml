@@ -16,6 +16,12 @@ let vocabulary =
         (FuzzySet.create_triangle 90.0 110.0)
     in
     voc
+    (* TODO complete the parser for vocabulary
+    Builder.vocabulary_from_string "
+        DEF BIG  TRIANGLE 5.0 15.0
+        DEF FAST TRIANGLE 90 110
+    "
+    *)
 
 let create_model voc =
     let rules = Builder.rules_from_string voc "

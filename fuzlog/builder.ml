@@ -29,11 +29,15 @@ let to_rule voc t = match t with
             (to_premisse voc s1)
             (to_conclusion voc s2)
 
-
 let rule_ast_from_string s =
     let lexbuf = Lexing.from_string s in
-    Parser.rules Lexer.tokens lexbuf
+    Parser.rules Lexer.rule_tokens lexbuf
 
 let rules_from_string voc s =
     List.map (to_rule voc) (rule_ast_from_string s)
+
+
+let voc_ast_from_string s =
+    let lexbuf = Lexing.from_string s in
+    Parser.vocabulary Lexer.voc_tokens lexbuf
 

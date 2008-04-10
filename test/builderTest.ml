@@ -2,6 +2,25 @@ open Fuzlog
 open Inference
 open Ast
 
+let _ = Tests.register "Build AST for vocabulary" (fun () ->
+    let nodes = Builder.voc_ast_from_string "
+        DEF BIG  TRIANGLE 5.0 15.0
+        DEF SMURGL [ (1 0.1) (2 0.4) ]
+    " in
+    ignore(OUnit.assert_equal 2 (List.length nodes));
+    let result = match nodes with
+        |
+            (DefByFun(Symb "BIG", Symb "TRIANGLE", [5.0; 15.0;]))
+            ::
+            (DefByPoints(Symb "SMURGL", [(1.0, 0.1); (2.0, 0.4);]))
+            ::
+            []
+            -> true
+        | _ -> false
+    in
+    OUnit.assert_bool "Not expected AST for vocabulary" result
+)
+
 let _ = Tests.register "Build AST for rules" (fun () ->
     let nodes = Builder.rule_ast_from_string "
         IF in10 IS big THEN ou10 IS fast

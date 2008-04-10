@@ -8,6 +8,14 @@ type is_t =
 type rule_t = 
     | Imply of is_t * is_t
 
+type def_t = 
+    | DefByFun of
+        symb_t       (* vocabulary term *)
+        * symb_t     (* function name to build the fuzzy set *)
+        * float list (* parameters to define the term through the funtion *)
+    | DefByPoints of
+        symb_t       (* vocabulary term *)
+        * (float * float) list (* list of points *)
 
 let indented_string indent s =
     Printf.sprintf "%s%s" (String.make indent ' ') s
